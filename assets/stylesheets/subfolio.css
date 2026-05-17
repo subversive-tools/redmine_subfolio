@@ -1,0 +1,154 @@
+/* Kanban Board Layout */
+.kanban-board {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 0px;
+  width: 100%;
+}
+
+/* Kanban Column */
+.kanban-column {
+  flex: 1 0 auto;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 0px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease;
+}
+
+.kanban-column h3 {
+  margin: 0 0 15px 0 !important;
+  padding: 7px;
+  background-color: #e8e8e8;
+  border-radius: 4px 4px 0px 0px;
+  text-align: center;
+}
+
+/* Kanban Cards Container */
+.kanban-cards {
+  flex: 1;
+  padding: 10px;
+  border: 2px dashed transparent;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kanban-cards.drag-over {
+  background-color: #e8f4fd !important;
+  border: 2px dashed #007cba !important;
+}
+
+/* Kanban Card */
+.kanban-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  margin-bottom: 10px;
+  cursor: move;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 150px;
+  max-width: 250px;
+  width: 100%;
+}
+
+.kanban-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-description {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.card-members {
+  font-size: 0.8em;
+  color: #888;
+}
+
+/* Drag and Drop Effects */
+.kanban-card.dragging {
+  transform: rotate(5deg) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  opacity: 0.8;
+  z-index: 1000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kanban-card.drag-placeholder {
+  opacity: 0.5;
+}
+
+/* Meta-Status Column Colors */
+.kanban-column.meta-pool {
+  background-color: rgba(255, 255, 0, 0.1) !important;
+}
+
+.kanban-column.meta-pool h3 {
+  background-color: rgba(255, 255, 0, 0.2) !important;
+}
+
+.kanban-column.meta-implementation {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.kanban-column.meta-implementation h3 {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+}
+
+.kanban-column.meta-done {
+  background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+.kanban-column.meta-done h3 {
+  background-color: rgba(40, 167, 69, 0.2) !important;
+}
+
+/* Warning/Error Messages */
+.kanban-warning {
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #f0ad4e;
+  background-color: #fcf8e3;
+  border-radius: 4px;
+}
+
+/* Project Status Tag */
+.project-status-tag {
+  display: inline-block;
+  padding: 4px 9px;
+  margin-left: 13px;
+  font-size: 0.55em;
+  font-weight: normal;
+  border-radius: 16px;
+  background-color: #e8e8e8;
+  color: #333;
+  vertical-align: middle;
+  box-shadow: 0px 0px 4px #00000024;
+}
+
+.project-status-tag.meta-pool {
+  background-color: rgba(255, 255, 0, 0.2) !important;
+  color: #666600 !important;
+}
+
+.project-status-tag.meta-implementation {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+  color: #004085 !important;
+}
+
+.project-status-tag.meta-done {
+  background-color: rgba(40, 167, 69, 0.2) !important;
+  color: #155724 !important;
+}
