@@ -1,6 +1,6 @@
 module SubfolioSettings
   FIELD_NAME = 'Project Status'.freeze
-  FIELD_DESCRIPTION = "=============================\nManaged by Subfolio plugin\n⚠️ Do not delete or rename ⚠️\n=============================".freeze
+  FIELD_DESCRIPTION = "=============================\nManaged by Subfolio plugin\n⚠️ Do not delete or rename ⚠️\n=============================\n\nPossible Values = Kanban-Spalten.\nFarbkodierung per Suffix:\n  -p  Pool / Backlog\n  -i  In Arbeit (In Progress)\n  -d  Erledigt (Done)\n\nBeispiel: \"In Arbeit-i\"".freeze
   DEFAULT_VALUES = ['Backlog-p', 'In Progress-i', 'Done-d'].freeze
 
   def self.status_field
