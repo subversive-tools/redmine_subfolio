@@ -1,52 +1,35 @@
 class ProjectStatusTagHook < Redmine::Hook::ViewListener
   def view_layouts_base_html_head(context = {})
-    begin
-      stylesheet_link_tag 'subfolio.css', plugin: 'redmine_subfolio'
-    rescue
-      css_path = File.join(File.dirname(__FILE__), '..', 'assets', 'stylesheets', 'subfolio.css')
-      if File.exist?(css_path)
-        "<style type='text/css'>#{File.read(css_path)}</style>".html_safe
-      else
-        ""
-      end
-    end
+    stylesheet_link_tag 'subfolio.css', plugin: 'redmine_subfolio'
+  rescue
+    css_path = File.join(File.dirname(__FILE__), '..', 'assets', 'stylesheets', 'subfolio.css')
+    File.exist?(css_path) ? "<style type='text/css'>#{File.read(css_path)}</style>".html_safe : ""
   end
 
   def view_projects_show_left(context = {})
     project = context[:project]
     return "" unless project
 
-    status_value = get_project_status_value(project)
+    field = SubfolioSettings.status_field
+    return "" unless field
+
+    status_value = project.custom_field_value(field)
     return "" unless status_value.present?
 
     display_name = status_value.gsub(/-[pid]$/, '')
-    meta_class = parse_meta_class(status_value)
+    meta_class = case status_value
+                 when /-p$/ then 'meta-pool'
+                 when /-i$/ then 'meta-implementation'
+                 when /-d$/ then 'meta-done'
+                 else ''
+                 end
 
-    render_status_tag_script(display_name, meta_class)
+    render_status_tag_script(display_name, meta_class, field.id)
   end
 
   private
 
-  def get_project_status_value(project)
-    field = CustomField.where(
-      type: 'ProjectCustomField',
-      name: 'Project Status',
-      field_format: 'list'
-    ).first
-    return nil unless field
-    project.custom_field_value(field)
-  end
-
-  def parse_meta_class(status_value)
-    case status_value
-    when /-p$/ then 'meta-pool'
-    when /-i$/ then 'meta-implementation'
-    when /-d$/ then 'meta-done'
-    else ''
-    end
-  end
-
-  def render_status_tag_script(display_name, meta_class)
+  def render_status_tag_script(display_name, meta_class, field_id)
     <<~HTML
       <script>
         (function() {
