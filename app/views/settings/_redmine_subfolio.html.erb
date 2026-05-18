@@ -1,0 +1,16 @@
+<% field_id = Setting.plugin_redmine_subfolio['status_field_id'].to_i %>
+<% field = field_id > 0 ? CustomField.find_by(id: field_id, type: 'ProjectCustomField') : nil %>
+
+<p>
+  <strong><%= l(:label_project_status_field) %>:</strong>
+  <% if field %>
+    <%= link_to field.name, edit_custom_field_path(field) %>
+    <span class="info">(ID&nbsp;<%= field.id %> &mdash; <%= l(:label_manage_via_custom_fields) %>)</span>
+  <% else %>
+    <span class="warning"><%= l(:notice_status_field_missing) %></span>
+  <% end %>
+</p>
+
+<p class="description">
+  <%= l(:text_status_field_hint) %>
+</p>

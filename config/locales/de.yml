@@ -1,3 +1,7 @@
 de:
   permission_manage_project_status: "Projektstatus verwalten"
   notice_not_authorized_to_change_project_status: "Sie sind nicht berechtigt, den Projektstatus zu ändern."
+  label_project_status_field: "Projektstatus-Feld"
+  label_manage_via_custom_fields: "Werte verwalten unter Administration → Benutzerdefinierte Felder"
+  notice_status_field_missing: "Feld nicht gefunden – wird beim nächsten Seitenaufruf automatisch neu angelegt."
+  text_status_field_hint: "Die möglichen Statuswerte werden direkt im benutzerdefinierten Feld verwaltet. Hänge -p (Backlog), -i (In Arbeit) oder -d (Erledigt) an einen Statuswert an, um die Spaltenfarbe im Kanban-Board zu steuern."

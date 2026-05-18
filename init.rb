@@ -10,11 +10,13 @@ Redmine::Plugin.register :redmine_subfolio do
 
   permission :manage_project_status, { kanban_projects: [:update_status] }, require: :member
 
-  Rails.configuration.to_prepare do
-    require_dependency 'portfolio_macros'
-    require_dependency 'project_status_tag_hook'
-    require_dependency 'project_status_field_hook'
-    require_dependency 'project_status_control_patch'
-    require_dependency 'project_status_view_patch'
-  end
+  settings default: { 'status_field_id' => '' },
+           partial: 'settings/redmine_subfolio'
 end
+
+require_relative 'lib/subfolio_settings'
+require_relative 'lib/portfolio_macros'
+require_relative 'lib/project_status_tag_hook'
+require_relative 'lib/project_status_field_hook'
+require_relative 'lib/project_status_control_patch'
+require_relative 'lib/project_status_view_patch'

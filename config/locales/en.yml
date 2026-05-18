@@ -1,3 +1,7 @@
 en:
   permission_manage_project_status: "Manage project status"
   notice_not_authorized_to_change_project_status: "You are not authorized to change the project status."
+  label_project_status_field: "Project Status field"
+  label_manage_via_custom_fields: "manage values under Administration → Custom Fields"
+  notice_status_field_missing: "Field not found – it will be recreated automatically on the next page request."
+  text_status_field_hint: "Possible status values are managed directly on the custom field. Append -p (backlog), -i (in progress), or -d (done) to a value to control the column colour in the kanban board."

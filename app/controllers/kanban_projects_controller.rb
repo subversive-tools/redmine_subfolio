@@ -4,19 +4,15 @@ class KanbanProjectsController < ApplicationController
   before_action :authorize_kanban_update
 
   def update_status
-    project_status_field = CustomField.where(
-      type: 'ProjectCustomField',
-      name: 'Project Status',
-      field_format: 'list'
-    ).first
+    field = SubfolioSettings.status_field
 
-    unless project_status_field
-      render json: { success: false, error: 'Project Status custom field not found' }
+    unless field
+      render json: { success: false, error: 'Project Status custom field not configured' }
       return
     end
 
     new_status = params[:status]
-    allowed_statuses = project_status_field.possible_values + ["No Status"]
+    allowed_statuses = field.possible_values + ["No Status"]
 
     unless allowed_statuses.include?(new_status)
       render json: { success: false, error: 'Invalid status value' }
@@ -26,9 +22,9 @@ class KanbanProjectsController < ApplicationController
     status_value = (new_status == "No Status") ? "" : new_status
 
     begin
-      @project.custom_field_values = { project_status_field.id => status_value }
+      @project.custom_field_values = { field.id => status_value }
       if @project.save
-        render json: { success: true, message: 'Project status updated successfully' }
+        render json: { success: true }
       else
         render json: { success: false, error: @project.errors.full_messages.join(', ') }
       end
@@ -47,7 +43,7 @@ class KanbanProjectsController < ApplicationController
 
   def authorize_kanban_update
     unless User.current.allowed_to?(:manage_project_status, @project)
-      render json: { success: false, error: 'Insufficient permissions to change project status' }
+      render json: { success: false, error: 'Insufficient permissions' }
     end
   end
 end

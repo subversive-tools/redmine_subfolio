@@ -2,16 +2,11 @@ class ProjectStatusFieldHook < Redmine::Hook::ViewListener
   def view_projects_form(context = {})
     project = context[:project]
 
-    project_status_field = CustomField.where(
-      type: 'ProjectCustomField',
-      name: 'Project Status',
-      field_format: 'list'
-    ).first
-
-    return '' unless project_status_field
+    field = SubfolioSettings.status_field
+    return '' unless field
     return '' if User.current.allowed_to?(:manage_project_status, project)
 
-    field_id = "project_custom_field_values_#{project_status_field.id}"
+    field_id = "project_custom_field_values_#{field.id}"
     <<~HTML
       <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
