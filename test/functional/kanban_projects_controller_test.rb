@@ -8,6 +8,14 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
       name:       "KanbanTest-#{SecureRandom.hex(4)}",
       identifier: "kanban-test-#{SecureRandom.hex(4)}"
     )
+    # Enable redmine_subfolio module so manage_project_status permission is accessible.
+    # Redmine's authorization checks both the permission AND the project module; without
+    # the module enabled, allowed_to?(:manage_project_status, @project) always returns false.
+    ActiveRecord::Base.connection.execute(
+      "INSERT INTO enabled_modules (project_id, name) VALUES (#{@project.id}, 'redmine_subfolio')"
+    )
+    @project.reload
+
     @status_field = ProjectCustomField.create!(
       name:            'Project Status',
       field_format:    'list',
@@ -33,8 +41,9 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   end
 
   def test_update_status_requires_login
+    # Unauthenticated requests are rejected by Redmine's authorization layer
     patch :update_status, params: { id: @project.id, status: 'Planning-p' }, as: :json
-    assert_response :unauthorized
+    assert_response :forbidden
   end
 
   def test_update_status_forbidden_without_permission
@@ -62,6 +71,7 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   def test_project_not_found
     @request.session[:user_id] = @admin.id
     patch :update_status, params: { id: 999_999, status: 'Planning-p' }, as: :json
+    # Admin bypasses Redmine's project-level auth; find_project returns 404
     assert_response :not_found
   end
 end

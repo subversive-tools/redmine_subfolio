@@ -19,15 +19,12 @@ class PortfolioMacrosTest < ActiveSupport::TestCase
   end
 
   def test_warning_rendered_without_status_custom_field
-    @status_field.destroy
-    html = render_macro(:portfolio, @project, [])
-    assert_match 'WARNING', html
-  ensure
-    @status_field = ProjectCustomField.create!(
-      name:            'Project Status',
-      field_format:    'list',
-      possible_values: %w[Planning-p Development-i Done-d]
-    )
+    # Stub status_field to return nil so the macro shows the WARNING message
+    # (SubfolioSettings.recreate_status_field would otherwise auto-create the field)
+    SubfolioSettings.stub(:status_field, nil) do
+      html = render_macro(:portfolio, @project, [])
+      assert_match 'WARNING', html
+    end
   end
 
   def test_no_subprojects_message
