@@ -1,69 +1,75 @@
 # Redmine Subfolio Plugin
 
-A Redmine plugin for visual portfolio management of projects. Displays projects in a kanban board grouped by status, adds a status badge to project overview pages, and lets authorized users move projects between statuses via drag and drop.
+![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)
+![Redmine](https://img.shields.io/badge/Redmine-5.0%20%7C%206.0-red.svg?logo=redmine)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Redmine Version](https://img.shields.io/badge/Redmine-4.0%2B-red.svg)](https://www.redmine.org/)
+A Redmine plugin for visual portfolio management. Displays subprojects as a kanban board grouped by status, adds a status badge to project pages, and lets authorised users move projects between columns via drag and drop — no external portfolio tool required.
+
+> Built for programme managers and teams who want portfolio visibility without vendor lock-in.
+
+## Screenshots
+
+<img alt="Portfolio kanban board with drag-and-drop status columns" src=".github/images/portfolio-kanban.jpg" />
 
 ## Features
 
-- **Kanban board**: `{{portfolio}}` wiki macro renders subprojects as cards in status columns
-- **Drag & drop**: move projects between status columns — changes persist immediately
-- **Status badge**: colored tag next to the project name on the project overview page
-- **Permission control**: only members with the *Manage project status* permission can change status values
-- **Color coding**: status column colors driven by a suffix on the status value (`-p`, `-i`, `-d`)
+- **Kanban board**: `{{portfolio}}` wiki macro renders subprojects as cards grouped by status columns
+- **Drag & drop**: move projects between columns — changes persist immediately
+- **Status badge**: coloured tag next to the project name on the project overview page
+- **Auto-setup**: the required custom field is created automatically on installation
+- **Permission control**: only members with the *Manage project status* permission can change status
+- **Colour coding**: column colours driven by a suffix on the status value (`-p`, `-i`, `-d`)
 
 ## Requirements
 
-- Redmine 4.0 or higher
-- A **Project Status** custom field of type *List* (see Setup below)
+- Redmine 5.0 or higher
 
 ## Installation
 
-```bash
-cd /path/to/redmine/plugins
-git clone https://github.com/modoq/redmine_subfolio.git
-bundle exec rake redmine:plugins:migrate RAILS_ENV=production
-```
+> [!IMPORTANT]
+> The plugin directory **MUST** be named `redmine_subfolio` for assets to load correctly.
 
-Restart Redmine after installation.
+1. **Clone** into your plugins directory:
+   ```bash
+   cd /path/to/redmine/plugins
+   git clone https://github.com/subversive-tools/redmine_subfolio.git redmine_subfolio
+   ```
 
-## Setup
+2. **Run migrations** — this creates the *Project Status* custom field automatically:
+   ```bash
+   bundle exec rake redmine:plugins:migrate RAILS_ENV=production
+   ```
 
-### 1. Create the custom field
+3. **Restart Redmine**.
 
-Go to **Administration → Custom Fields → Projects → New custom field** and create:
+## Configuration
 
-| Setting | Value |
-|---|---|
-| Name | `Project Status` (exact spelling required) |
-| Format | List |
-| Used as filter | optional |
+Navigate to **Administration > Plugins > Subfolio > Configure** to see the active custom field.
 
-Add your status values. Append a suffix to control the column color:
+### Permissions
 
-| Suffix | Color | Meaning |
-|---|---|---|
-| `-p` | yellow | pool / backlog / planning |
-| `-i` | blue | in progress / implementation |
-| `-d` | green | done / delivered / closed |
+Go to **Administration > Roles and permissions** and enable *Manage project status* for roles that should be able to move projects on the kanban board.
+
+### Status values & colour coding
+
+Status values are managed directly on the *Project Status* custom field under **Administration > Custom Fields**. Append a suffix to control the column colour:
+
+| Suffix | Colour | Meaning |
+|:---|:---|:---|
+| `-p` | yellow | Pool / Backlog / Planning |
+| `-i` | blue | In Progress / Active |
+| `-d` | green | Done / Delivered / Closed |
 
 **Example values:**
 ```
 Ideas-p
-Planning-p
-Development-i
+In Progress-i
 Review-i
 Done-d
 ```
 
-### 2. Assign the permission
-
-Go to **Administration → Roles and permissions** and enable *Manage project status* for the roles that should be allowed to move projects on the kanban board.
-
 ## Usage
-
-### Kanban board
 
 Place the macro on any wiki page within a parent project:
 
@@ -71,33 +77,27 @@ Place the macro on any wiki page within a parent project:
 {{portfolio}}
 ```
 
-All active, visible subprojects are shown as cards grouped by their *Project Status* value. Projects without a status appear in a separate *No Status* column. Members with the *Manage project status* permission can drag cards between columns.
+All active, visible subprojects appear as cards grouped by their status value. Projects without a status appear in a *No Status* column on the left. Members with the *Manage project status* permission can drag cards between columns to update status immediately.
 
-### Status badge
+## Troubleshooting
 
-When a subproject has a *Project Status* value set, a colored badge is automatically added next to the project name on the project overview page. The raw custom field entry is hidden — the badge replaces it.
+**Macro shows as plain text `{{portfolio}}`?**
+- Check that the plugin is installed and migrations have been run.
+- Verify the wiki page formatter supports macros (Textile or CommonMark with macros enabled).
 
-## Compatibility
-
-Tested with Redmine 4.x, 5.x, and 6.x. The plugin uses no Redmine-version-specific APIs beyond the standard hook and macro system.
-
-## Migration from redmine_submenus
-
-If you previously used the combined `redmine_submenus` plugin (before the kanban functionality was split out), run the migration to preserve role permissions:
-
-```bash
-bundle exec rake redmine:plugins:migrate RAILS_ENV=production
-```
-
-The migration reads the old `kanban_allowed_roles` setting and grants the *Manage project status* permission to the corresponding roles automatically.
+**Drag and drop has no effect?**
+- Ensure the user has the *Manage project status* permission in the project.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
+Contributions are welcome — please fork the repository and open a Pull Request.
+
+1. Fork it
+2. Create your feature branch (`git checkout -b feature/my-feature`)
 3. Commit your changes
-4. Open a pull request
+4. Push to the branch
+5. Open a Pull Request
 
 ## License
 
-[MIT License](LICENSE) — Copyright (c) 2025 Stefan Mischke
+[MIT License](LICENSE) — Copyright (c) 2026 Stefan Mischke
