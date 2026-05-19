@@ -38,12 +38,12 @@ class KanbanProjectsController < ApplicationController
   def find_project
     @project = Project.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { success: false, error: 'Project not found' }
+    render json: { success: false, error: 'Project not found' }, status: :not_found
   end
 
   def authorize_kanban_update
     unless User.current.allowed_to?(:manage_project_status, @project)
-      render json: { success: false, error: 'Insufficient permissions' }
+      render json: { success: false, error: 'Insufficient permissions' }, status: :forbidden
     end
   end
 end
