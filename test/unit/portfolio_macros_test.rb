@@ -1,4 +1,5 @@
 require_relative '../test_helper'
+require 'mocha/minitest'
 
 class PortfolioMacrosTest < ActiveSupport::TestCase
   def setup
@@ -21,10 +22,10 @@ class PortfolioMacrosTest < ActiveSupport::TestCase
   def test_warning_rendered_without_status_custom_field
     # Stub status_field to return nil so the macro shows the WARNING message
     # (SubfolioSettings.recreate_status_field would otherwise auto-create the field)
-    SubfolioSettings.stub(:status_field, nil) do
-      html = render_macro(:portfolio, @project, [])
-      assert_match 'WARNING', html
-    end
+    # Use Mocha stubs (Mocha is loaded and overrides Minitest's stub)
+    SubfolioSettings.stubs(:status_field).returns(nil)
+    html = render_macro(:portfolio, @project, [])
+    assert_match 'WARNING', html
   end
 
   def test_no_subprojects_message
