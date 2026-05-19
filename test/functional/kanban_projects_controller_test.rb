@@ -1,6 +1,9 @@
 require_relative '../test_helper'
 
 class KanbanProjectsControllerTest < Redmine::ControllerTest
+  # Redmine::ControllerTest does not declare fixtures :all — must be explicit
+  fixtures :all
+
   def setup
     @project = Project.create!(
       name:       "KanbanTest-#{SecureRandom.hex(4)}",
