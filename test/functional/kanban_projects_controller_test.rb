@@ -48,14 +48,20 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   end
 
   def test_update_status_forbidden_without_permission
+    # Redmine verifies session[:tk] against a DB token; generate one so auth passes
+    token = @jsmith.generate_session_token
     @request.session[:user_id] = @jsmith.id
+    @request.session[:tk]      = token
     patch :update_status, params: { id: @project.id, status: 'Planning-p' }, as: :json
     assert_response :forbidden
   end
 
   def test_update_status_success
-    # Admin users bypass all permission checks in Redmine
+    # Admin users bypass all permission checks in Redmine (allowed_to? always true for admin?)
+    # Must also satisfy Redmine's session-token verification
+    token = @admin.generate_session_token
     @request.session[:user_id] = @admin.id
+    @request.session[:tk]      = token
 
     patch :update_status, params: { id: @project.id, status: 'Development-i' }, as: :json
 
@@ -65,7 +71,9 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   end
 
   def test_project_not_found
+    token = @admin.generate_session_token
     @request.session[:user_id] = @admin.id
+    @request.session[:tk]      = token
     patch :update_status, params: { id: 999_999, status: 'Planning-p' }, as: :json
     # Redmine's authorization layer returns 403 for inaccessible/non-existent projects
     assert_response :forbidden
