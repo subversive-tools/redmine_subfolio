@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.1] - 2026-05-19
+
+### Fixed
+- Corrected `test/test_helper.rb` require path (was going two levels up instead of three, landing at `plugins/test/` instead of `redmine/test/`).
+
 ## [0.2.0] - 2026-05-18
 
 ### Added
