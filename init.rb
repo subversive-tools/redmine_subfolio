@@ -4,7 +4,7 @@ Redmine::Plugin.register :redmine_subfolio do
   name 'Subfolio'
   author 'Stefan Mischke'
   description 'Portfolio management for Redmine projects: kanban board, project status tags, and drag-and-drop status management via a custom Project Status field.'
-  version '0.2.0'
+  version '0.2.1'
   url 'https://github.com/subversive-tools/redmine_subfolio'
   author_url 'https://github.com/modoq'
 
