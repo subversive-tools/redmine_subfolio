@@ -1,7 +1,9 @@
 require_relative '../test_helper'
 
 class KanbanProjectsControllerTest < Redmine::ControllerTest
-  # Redmine::ControllerTest does not declare fixtures :all — must be explicit
+  # Redmine::ControllerTest does not declare fixtures :all — must be explicit.
+  # Also: do NOT use `as: :json` for patch calls — Redmine's api_request? checks
+  # params[:format] and skips session auth when it equals "json", causing 403.
   fixtures :all
 
   def setup
@@ -10,8 +12,6 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
       identifier: "kanban-test-#{SecureRandom.hex(4)}"
     )
     # Enable redmine_subfolio module so manage_project_status permission is accessible.
-    # Redmine's authorization checks both the permission AND the project module; without
-    # the module enabled, allowed_to?(:manage_project_status, @project) always returns false.
     ActiveRecord::Base.connection.execute(
       "INSERT INTO enabled_modules (project_id, name) VALUES (#{@project.id}, 'redmine_subfolio')"
     )
@@ -23,7 +23,6 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
       possible_values: %w[Planning-p Development-i Done-d],
       is_for_all:      true
     )
-    # Use fixture users (loaded via fixtures :all inherited from parent class)
     @admin  = User.find_by(login: 'admin')
     @jsmith = User.find_by(login: 'jsmith')
   end
@@ -34,32 +33,31 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   end
 
   def test_update_status_requires_login
-    # Unauthenticated requests are rejected by Redmine's authorization layer
-    patch :update_status, params: { id: @project.id, status: 'Planning-p' }, as: :json
+    # No session — require_login returns head :forbidden (empty body 403)
+    patch :update_status, params: { id: @project.id, status: 'Planning-p' }
     assert_response :forbidden
   end
 
   def test_update_status_forbidden_without_permission
+    # jsmith has no role on @project → authorize_kanban_update returns 403 JSON
     @request.session[:user_id] = @jsmith.id
-    patch :update_status, params: { id: @project.id, status: 'Planning-p' }, as: :json
+    patch :update_status, params: { id: @project.id, status: 'Planning-p' }
     assert_response :forbidden
   end
 
   def test_update_status_success
-    # Admin users bypass all permission checks in Redmine (allowed_to? always true for admin)
+    # Admin bypasses all permission checks in Redmine
     @request.session[:user_id] = @admin.id
-
-    patch :update_status, params: { id: @project.id, status: 'Development-i' }, as: :json
-
+    patch :update_status, params: { id: @project.id, status: 'Development-i' }
     assert_response :success
     body = JSON.parse(response.body)
     assert body['success'], "expected success but got: #{body.inspect}"
   end
 
   def test_project_not_found
+    # With valid auth, find_project rescues RecordNotFound and renders :not_found (404)
     @request.session[:user_id] = @admin.id
-    patch :update_status, params: { id: 999_999, status: 'Planning-p' }, as: :json
-    # Redmine's authorization layer returns 403 for inaccessible/non-existent projects
-    assert_response :forbidden
+    patch :update_status, params: { id: 999_999, status: 'Planning-p' }
+    assert_response :not_found
   end
 end
