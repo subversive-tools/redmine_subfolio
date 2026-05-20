@@ -33,8 +33,12 @@ class KanbanProjectsControllerTest < Redmine::ControllerTest
   end
 
   def test_update_status_requires_login
-    # No session — require_login returns head :forbidden (empty body 403)
-    patch :update_status, params: { id: @project.id, status: 'Planning-p' }
+    # No session, JSON format: Redmine's require_login calls head :forbidden for
+    # non-HTML formats.  Without as: :json the format is HTML and we'd get a 302
+    # redirect to /login instead.  Using as: :json triggers api_request?=true
+    # which skips session lookup (no session anyway), falls through to anonymous,
+    # then require_login returns 403 for JSON format.
+    patch :update_status, params: { id: @project.id, status: 'Planning-p' }, as: :json
     assert_response :forbidden
   end
 
